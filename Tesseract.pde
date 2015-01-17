@@ -1,52 +1,68 @@
-int x = 100;            //Abstand der Punkte des Tesserates auf die Ebenen
-int orbitradius = 400;  //Abstand der Kamera vom Koordinatenursprung in R3
+int x = 50;             //Abstand der Punkte des Tesserates auf die Ebenen
 float alpha = 0;        //Winkel der Rotation in R4
 boolean active = true;  //Status der Drehung
-float dalpha = 1;
+float dalpha = 1;       //Rotationsgeschwindigkeit
 
-void setup(){
-  size(400,400,P3D);
+void setup() {
+  size(400, 400);
 }
 
-void draw(){
+void draw() {
   background(255);
-  
-  //Rotation der Kamera um den Ursprung in R3 (c)Julius Piso
-  beginCamera();
-  camera();
-  translate(width/2, height/2, -orbitradius);
-  float rotz = radians(map(mouseX, -width/2, width/2, 180, -180));
-  rotateY(rotz);
-  float rotx = radians(map(mouseY, -height/2, height/2, 180, -180));
-  rotateX(rotx);
-  endCamera();
-  //Ende der Rotation
-  
-  //Zeichnen der Linien
-  for(int i = 0; i < Kanten.length; i++){
-    line4d Kante = Kanten[i];
+  pushMatrix();
+  translate(width/2, height/2);
+  //Zeichnen der Flächen
+  for (int i = 0; i < Flachen.length; i++) {
+    quad4d seite = Flachen[i];
+
+    //Rotation der Punkte 
+    point4d p1 = rotatePoint4d(seite.a, radians(alpha));
+    point4d p2 = rotatePoint4d(seite.b, radians(alpha));
+    point4d p3 = rotatePoint4d(seite.c, radians(alpha));
+    point4d p4 = rotatePoint4d(seite.d, radians(alpha));
+
+    //Zeichen der Fläche
+    stroke(0);
+    fill(255, 0, 0, 50);
     
-    //Rotation der beiden Punkte 
-    point4d p1 = rotatePoint4d(Kante.x, radians(alpha));
-    point4d p2 = rotatePoint4d(Kante.y, radians(alpha));
-    
-    line(p1.to3d().x,p1.to3d().y,p1.to3d().z,p2.to3d().x,p2.to3d().y,p2.to3d().z); //Zeichnen der Linie in R3
+    //Zeichnen der Seitenfläche
+    beginShape();
+    vertex(p1.to3d().rot().to2d().x, p1.to3d().rot().to2d().y);
+    vertex(p2.to3d().rot().to2d().x, p2.to3d().rot().to2d().y);
+    vertex(p3.to3d().rot().to2d().x, p3.to3d().rot().to2d().y);
+    vertex(p4.to3d().rot().to2d().x, p4.to3d().rot().to2d().y);
+    endShape(CLOSE);
   }
   
+  //Zeichnen des Netzes
+  for (int i = 0; i < Kanten.length; i++) {
+    //Rotation der Punkte
+    point4d p1 = rotatePoint4d(Kanten[i].x, radians(alpha));
+    point4d p2 = rotatePoint4d(Kanten[i].y, radians(alpha));
+
+    //Zeichnen der Liene
+    line(p1.to3d().rot().to2d().x, p1.to3d().rot().to2d().y, p2.to3d().rot().to2d().x, p2.to3d().rot().to2d().y);
+  }
+  popMatrix();
   //Erhöhung von Rotationswinkel alpha
-  if(active){
+  if (active) {
     alpha += dalpha;
     alpha = alpha%360;
   }
 }
 
+//Tastenbelegungen
 void keyPressed() {
-  if(key == ' '||key == ENTER){
+  //Enter, " ": Pause
+  if (key == ' '||key == ENTER) {
     active = !active;
-  }else if(key == 'w'){
+  }
+  //W: speed up
+  else if (key == 'w') {
     dalpha *= 2;
-  }else if(key == 's'){
+  }
+  //S: speed down
+  else if (key == 's') {
     dalpha *= 0.5;
   }
-   println(dalpha);
 }
