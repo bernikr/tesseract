@@ -89,7 +89,6 @@ quad4d[] Flachen = {
   new quad4d(Ecken[8], Ecken[10], Ecken[14], Ecken[12]), 
 
 
-
   new quad4d(Ecken[6], Ecken[7], Ecken[15], Ecken[14]), 
   new quad4d(Ecken[0], Ecken[1], Ecken[9], Ecken[8]), 
   new quad4d(Ecken[2], Ecken[3], Ecken[11], Ecken[10]), 
