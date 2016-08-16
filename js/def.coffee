@@ -1,6 +1,4 @@
-@data = {}
-cube = @data.cube = {}
-
+cube = data.cube
 ###
 Create an array of the 16 vertexes of the tesseract. A vertex of the tesseract
 has 4 coordinates, each with 2 possibilites, 1 or -1. Therefore we need every
