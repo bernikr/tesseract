@@ -15,18 +15,9 @@ class @Point4d
               [0, 0, Math.cos(phi), -Math.sin(phi)],
               [0, 0, Math.sin(phi),  Math.cos(phi)]]
 
-    np = [0, 0, 0, 0] # Definition of the output array
+    return new Point4d(transformVector(@c, rotmat))
 
-    # Multiplication of the matrix with the vertex
-    for i in [0..3]
-      for j in [0..3]
-        np[i] += rotmat[i][j] * @c[j]
-
-    return new Point4d(np)
-
-  to3d: () ->
-    # Projektion: Verkürzung der Koordinaten
-    new Point3d(x/Math.pow(2, @c[3]/2) for x in @c[0..2])
+  to3d: -> new Point3d(projectCoordinate(x, @c[3]) for x in @c[0..2])
 
 class @Point3d
   constructor: (x,y,z) ->
@@ -35,30 +26,28 @@ class @Point3d
     else
       @c = [x,y,z]
 
-  rot: (phi) ->
-    roty = data.rotation.y
-    rotx = data.rotation.x
-    #Definition der Rotationsmatrizen
-    rotmaty = [[Math.cos(roty), 0, -Math.sin(roty)],
-              [0, 1, 0],
-              [Math.sin(roty), 0, Math.cos(roty)]]
+  rotate: (a, b) ->
 
-    rotmatx = [[1, 0, 0],
-               [0, Math.cos(rotx), -Math.sin(rotx)],
-               [0, Math.sin(rotx), Math.cos(rotx)]]
+    # Definition of the rotation matrices
+    rotationMatrix1 = [[Math.cos(a), 0, -Math.sin(a)],
+                      [0, 1, 0],
+                      [Math.sin(a), 0, Math.cos(a)]]
+    rotationMatrix2 = [[1, 0, 0],
+                      [0, Math.cos(b), -Math.sin(b)],
+                      [0, Math.sin(b), Math.cos(b)]]
 
-    np = [0, 0, 0] # //Definition des Arrays des Zwischenspeichers
-    nnp = [0, 0, 0] #//Definition des Arrays der Ausgabekoordinaten
+    v = transformVector(@c, rotationMatrix1)
+    v = transformVector(v, rotationMatrix2)
+    return new Point3d(v)
 
-    #//Multiplikation der Matrizen mit dem Punkt
-    for i in [0..2]
-      for j in [0..2]
-        np[i] += rotmatx[i][j] * @c[j]
-    for i in [0..2]
-      for j in [0..2]
-        nnp[i] += rotmaty[i][j] * np[j]
+  to2d: -> projectCoordinate(x, @c[2]) for x in @c[0..1]
 
-    return new Point3d(nnp); #// Rückgabe des gedrehten Punktes
+projectCoordinate = (x, a) -> x/Math.pow(2, a/2)
 
-  to2d: () ->
-    x/Math.pow(2, @c[2]/2) for x in @c[0..1]
+transformVector = (vector, matrix) ->
+  dim = vector.length
+  output = (0 for i in [1..dim])
+  for i in [0..dim-1]
+    for j in [0..dim-1]
+      output[i] += matrix[i][j] * vector[j]
+  return output
