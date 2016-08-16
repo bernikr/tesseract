@@ -1,5 +1,3 @@
----
----
 @data = {}
 cube = @data.cube = {}
 

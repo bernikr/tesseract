@@ -1,6 +1,3 @@
----
----
-
 class @Point4d
   constructor: (x,y,z,a) ->
     if typeof x is "object"
