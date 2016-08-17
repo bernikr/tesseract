@@ -13,7 +13,7 @@ v = cube.vertexes = for x in [0..16]
     binaryDim = [1,2,4,8]              # helper-array
     isOne = x & binaryDim[dimension]   # bitwise and
     return if isOne > 0 then 1 else -1 # casting on -1 and 1
-  new Point4d(c(3), c(2), c(1),  c(0))
+  new Point4d([c(3), c(2), c(1),  c(0)])
 
 ###
 Create the array of the 32 edges by looking at the 120 possible pairs of
@@ -22,10 +22,10 @@ vertexes and adding those who have exactly 3 coordinates in common.
 cube.edges = []
 for i in [0..14]
   for j in [i+1..15]
-    c = 0
+    count = 0
     for k in [0..3]
-      c++ if v[i].c[k] == v[j].c[k]
-    cube.edges.push([v[i], v[j]]) if c == 3
+      count++ if v[i].c[k] == v[j].c[k]
+    cube.edges.push([v[i], v[j]]) if count == 3
 
 ###
 Select the 24 faces out of the 1820 possible choices of 4 vertexes by choosing

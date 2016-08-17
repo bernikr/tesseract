@@ -2,13 +2,13 @@
 ---
 @data =
   rotation:
-    alpha: 0         # Current angle of the 4D rotation
-    beta: 0
-    gamma: 0
-    delta: Math.PI/100
+    alpha: 0           # Current angle of the 4D rotation
+    beta:  0           # Current angle of the 3D rotation around the y-axis
+    gamma: 0           # Current angle of the 3D rotation around the x-axis
+    delta: Math.PI/100 # Angle difference between the two 3D cubes
     speed: Math.PI/100 # Rotation speed
-    isRunning: true  # Status of the rotation
-  scale: 70                   # Scaling factor
+    isRunning: true    # Status of the rotation
+  scale: 70            # Scaling factor
   is3D: false
   cube: {}
 
@@ -28,7 +28,6 @@ ready = (P) ->
       P.size($(window).width(),$(window).height())
     else
       P.size(500, 500)
-
     setInterval P.redraw, 50 # I don't know, why this is needed...
 
   P.draw = ->
@@ -66,16 +65,15 @@ drawEdges = (pos) ->
     [x1,y1] = projectVertex(edge[0], pos)
     [x2,y2] = projectVertex(edge[1], pos)
     P.line(x1, y1, x2, y2)
-    console.log pos
 
 projectVertex = (v, pos) ->
   rot = data.rotation
-  v = v.rotate(rot.alpha)           # rotate in 4D
-  v = v.to3d()                      # project 4D to 3D
-  v = v.rotate(rot.beta + rot.delta*pos, rot.gamma) # rotate in 3D
-  v = v.to2d()                      # project 3D to 2D
-  v = (x*data.scale for x in v)     # scale the 2D vertex
-  v[0] = v[0]/2 if pos != 0
+  v = v.rotate(rot.alpha)                           # rotate in 4D
+  v = v.to3d()                                      # project 4D to 3D
+  v = v.rotate(rot.gamma, rot.beta + rot.delta*pos) # rotate in 3D
+  v = v.to2d()                                      # project 3D to 2D
+  v = (x*data.scale for x in v)                     # scale the 2D vertex
+  v[0] = v[0]/2 if pos != 0                # squash the vertex in 3D mode
   return v
 
 # 3D mouse rotation
@@ -84,5 +82,9 @@ $(document).mousemove (e)->
   data.rotation.beta = mouseToAngle(e.pageX, $(window).width())
   data.rotation.gamma = mouseToAngle(e.pageY, $(window).height())
 
+###
+In 3D mode resize the canvas on a window resize.
+(Important for switching to fullscreen.)
+###
 $(window).resize ->
   P.size($(window).width(),$(window).height()) if data.is3D
