@@ -16,9 +16,13 @@
 LEFT = -1
 NO3D = 0
 RIGHT = 1
+SETUP = 0
+FRONT = 1
+BACK = -1
 
 {% include_relative classes.coffee %}
 {% include_relative def.coffee %}
+{% include_relative lol.coffee %}
 
 $ => @P = new Processing('canvas', ready)
 
@@ -26,6 +30,7 @@ ready = (P) ->
   P.setup = ->
     if data.is3D
       P.size($(window).width(),$(window).height())
+      lol(SETUP, P)
     else
       P.size(500, 500)
     setInterval P.redraw, 50 # I don't know, why this is needed...
@@ -36,12 +41,17 @@ ready = (P) ->
     P.fill(255, 0, 0, 50)
 
     if data.is3D
+      lol(BACK, P)
+      P.fill(255, 0, 0, 50)
+      P.pushMatrix()
       P.translate(P.width/4 , P.height/2)
       drawFaces(LEFT)
       drawEdges(LEFT)
       P.translate(P.width/2, 0)
       drawFaces(RIGHT)
       drawEdges(RIGHT)
+      P.popMatrix()
+      lol(FRONT, P)
     else
       P.translate(P.width/2 , P.height/2)
       drawFaces(NO3D)
