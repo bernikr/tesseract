@@ -98,3 +98,4 @@ In 3D mode resize the canvas on a window resize.
 ###
 $(window).resize ->
   P.size($(window).width(),$(window).height()) if data.is3D
+  data.scale = $(window).height()/7
