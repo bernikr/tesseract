@@ -33,8 +33,8 @@ class @Point3d
                       [0, Math.cos(b), -Math.sin(b)],
                       [0, Math.sin(b), Math.cos(b)]]
 
-    v = transformVector(@c, rotationMatrix1)
-    v = transformVector(v, rotationMatrix2)
+    v = transformVector(@c, rotationMatrix2)
+    v = transformVector(v, rotationMatrix1)
     return new Point3d(v)
 
   to2d: -> projectCoordinate(x, @c[2]) for x in @c[0..1]
